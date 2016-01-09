@@ -32,9 +32,6 @@ impl Clipboard {
         }
         Ok(value)
     }
-    fn seq_num(&self) -> u32 {
-        return unsafe { user32::GetClipboardSequenceNumber() };
-    }
 }
 
 impl Drop for Clipboard {
@@ -56,7 +53,7 @@ impl WinApiError {
     }
 }
 fn main() {
-    let mut seq = None;
+    let mut current = String::new();
     loop {
         let clip = match Clipboard::open() {
             Err(WinApiError(ERROR_ACCESS_DENIED)) |
@@ -67,9 +64,8 @@ fn main() {
             Ok(c) => c,
         };
 
-        let next_seq = Some(clip.seq_num());
-        if seq != next_seq {
-            seq = next_seq;
+        if current != clip.get_data().unwrap() {
+            current = clip.get_data().unwrap();
             let mut client = TcpStream::connect("127.0.0.1:8080").unwrap();
             let message = clip.get_data().expect("Could not get Data!");
             println!("{}", message);
@@ -81,10 +77,10 @@ fn main() {
 }
 
 
-#[inline(always)]                                       // used from clipboard-win, not mine
+#[inline(always)]                                       // used from clipboard-win, not mine, annotated
 unsafe fn rust_strlen16(buff_p: *mut u16) -> usize {
     let mut i: isize = 0;
-    while *buff_p.offset(i) != 0 {
+    while *buff_p.offset(i) != 0 {  // like *(ptr + i) in C
         i += 1;
     }
     return i as usize
