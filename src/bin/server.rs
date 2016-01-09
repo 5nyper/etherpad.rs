@@ -34,7 +34,7 @@ fn set_data(foo: TcpStream) -> Result<i32, i32> {
 			println!("couldnt open clipboard");
 		}
 		else {
-        	let h_Mem = kernel32::GlobalAlloc(66, len as u32);
+        	let h_Mem = kernel32::GlobalAlloc(GMEM_MOVEABLE, len as u32);
 			let data = kernel32::GlobalLock(h_Mem) as *mut u16;
 			let len: usize = (len - 1) / 2;
             std::ptr::copy_nonoverlapping(buff.as_ptr(), data, len);
