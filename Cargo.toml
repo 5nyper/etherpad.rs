@@ -1,0 +1,9 @@
+[package]
+name = "etherpad"
+version = "0.1.0"
+authors = ["Vikaton <root@stackin.money"]
+
+[dependencies]
+user32-sys = "*"
+kernel32-sys = "*"
+winapi = "*"
